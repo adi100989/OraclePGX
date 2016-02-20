@@ -1,0 +1,101 @@
+/****************************************************** 
+*   def  Algorithm_1:
+*   	initialize labels : for each v in V , l(v)[0]=v
+*   	i=0
+*   	while(!stop_criteria) do:
+*        	i++
+*        	propogation:
+*           		for each v in V do
+*             			 l(v)[i] = argmax over l sum(over all neighbors of v) {l(v)[i-1]== l}
+*           		end
+*  	 end
+*   	return final labeling : l(v)[t] for each v in V, 
+*        		    where t is the last executed step
+*   
+*   def stop_criteria:
+*	if either l(v)[i]= l(v)[i-1] for each v in V
+*           or l(v)[i]= l(v)[i-2] for each v in V
+*           return True
+*
+
+**********************************************************/
+//procedure label_propogation(g:graph,name:N_P <int> ;label: nodeProp <int>)
+procedure label_propogation(g:graph): int
+{
+ bool stop=false;
+ if( g.numNodes()==0 || g.numNodes()==1 ) return g.numNodes();
+ 
+ nodeProp <int>(g) label;
+ map<node(g), int> l_1;  //create two hashmaps to store l-1 and l-2 labels
+ map<node(g), int> l_2;
+// map<node(g), int> l;
+ //initialize it for each node in the graph
+ int i=0;
+ bool a=true;
+ int max_key=0;
+ bool l1_stop;
+ bool l2_stop;
+
+ //let the initial labels be equal to the names of the nodes/vertices
+  for(n : g.nodes)
+   {
+	n.label= i;
+        i++;
+   }
+//algo1 starts
+while(a)
+{
+ l1_stop=true;
+ l2_stop=true;
+ foreach(n:g.nodes)
+  {
+   if(n.label!=l_1[n])
+   {
+     l1_stop=false; // as soon as it gets a difference it reverses the stopping decision
+     
+   }
+   if (n.label!=l_2[n])
+    {
+      l2_stop=false;   // as soon as it gets a difference it reverses the stopping decision
+     }
+   }
+  //stopping criteria check here
+  if(l1_stop || l2_stop )
+   {
+     a=false ;
+     //continue @ while_label; //if any flag says stop then break the loop.
+   }	
+ foreach(n:g.nodes)
+  {
+   map<int,int> neighbours;
+   foreach(s:n.nbrs)
+   {
+      //Propogation step
+      neighbours[s.label]+=1;
+   }      
+   max_key=neighbours.getMaxKey();
+   foreach(s:n.nbrs)
+   {
+      //label the neighbours
+        l_2[s]=l_1[s];
+	l_1[s]=s.label;
+	s.label=max_key;
+   }
+   //label the node n
+        l_2[n]=l_1[n];
+        l_1[n]=n.label;
+        n.label=max_key;
+  }
+/*
+      if (s.label== max(count(s.label)) && n.label==max(count(s.label)))
+          break;
+       // if multiple max label break tie randomly. I would be assigning the 
+       // lowest number label as the community label. still to be done
+       s.label=max(count(s.label));
+*/  
+
+    
+  }
+return g.numNodes();
+}
+
