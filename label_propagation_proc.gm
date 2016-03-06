@@ -25,13 +25,14 @@ procedure label_propagation(g:graph, ID : N_P <int>(g); label: N_P <int>(g)): in
  bool stop=false;
  nodeProp <int>(g) label_1;
  nodeProp <int>(g) label_2;
+ nodeProp <int>(g) label_next;
  int i=0;
  bool mainStop=false;
- int max_key=0;
+// int max_key=0;
  bool l1_stop;
  bool l2_stop;
- int max_val,j;
- map<int,int> neighbours;
+// int max_val,j;
+ //map<int,int> neighbours;
  if( g.numNodes()<=1 ) return 0;
 
  //let the initial labels be equal to the names of the nodes/vertices
@@ -60,48 +61,33 @@ procedure label_propagation(g:graph, ID : N_P <int>(g); label: N_P <int>(g)): in
 	if(!(l1_stop || l2_stop))
 	{
 
- 	for(n:g.nodes)
+ 	foreach(n:g.nodes)
   		{ 
+		map<int,int> neighbours;
 		neighbours.clear();
-		neighbours[n.label]=1;
-   		for(s:n.nbrs)
+		//neighbours[n.label]=1;
+   		foreach(s:n.nbrs)
    		{
-			if(neighbours.hasKey(s.label))
-      				neighbours[s.label]+=1;
-			else
-				neighbours[s.label]=1;
+      			int temp=s.label;	
+			neighbours[temp]+=1;
+	
    		}      
-		max_val=0;
-		max_key=0;
-		j=0;
+		int max_key=0;
 		max_key= neighbours.getMaxKey();
-/*
-		while(j<neighbours.size())
-  		{
-			if(max_val<=neighbours[j])
-   			{
-				max_key=j;  // since it is iterating in a seq, no need to check if l>l', since i<i+1
-				max_val=neighbours[j];
-   			}
-  			j++;
-  		}  
-*/		foreach(s1:n.nbrs)
-  		{
-      			//label the neighbours
-        		s1.label_2=s1.label_1;
-			s1.label_1=s1.label;
-			s1.label=max_key;
-  		}
-   		//label the node n
-        	n.label_2=n.label_1;
-       		n.label_1=n.label;
-        	n.label=max_key;
-  		}
+		n.label_next=max_key;
+		}
+		  	
+		foreach(n:g.nodes)
+		{
+		n.label_2=n.label_1;
+                n.label_1=n.label;
+                n.label=n.label_next;
+		}
    
  	}
 	else 
 		mainStop=true;
-        }while(!mainStop && i<2);
+        }while(!mainStop && i<100);
 
 return i;
 }
