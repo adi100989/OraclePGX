@@ -1,0 +1,152 @@
+/****************************************************** 
+*   def  Algorithm_1:
+*   	initialize labels : for each v in V , l(v)[0]=v
+*   	i=0
+*   	while(!stop_criteria) do:
+*        	i++
+*        	propogation:
+*           		for each v in V do
+*             			 l(v)[i] = argmax over l sum(over all neighbors of v) {l(v)[i-1]== l}
+*           		end
+*  	 end
+*   	return final labeling : l(v)[t] for each v in V, 
+*        		    where t is the last executed step
+*   
+*   def stop_criteria:
+*	if either l(v)[i]= l(v)[i-1] for each v in V
+*           or l(v)[i]= l(v)[i-2] for each v in V
+*           return True
+*
+
+**********************************************************/
+procedure label_propagation(g:graph,ID:N_P <int>(g) ;label: N_P <int>(g)):int
+//procedure label_propagation(g:graph; label: N_P <int>(g)): int
+{
+ bool stop=false;
+ nodeProp <int>(g) label_1;
+ nodeProp <int>(g) label_2;
+ nodeProp <int>(g) label_next;
+ int i=1;
+ bool mainStop=false;
+
+ bool l1_stop;
+ bool l2_stop;
+
+ if( g.numNodes()<=1 ) return 0;
+
+ //let the initial labels be equal to the names of the nodes/vertices
+
+   for(n : g.nodes)
+   {
+	n.label= n.ID;
+	n.label_1=-99;
+	n.label_2=-99;
+	n.label_next=-99;
+
+   }
+
+
+ //algo1 starts
+
+ i=0;
+ do
+ {      i++;
+	mainStop=false;	
+	l1_stop=true;
+	l2_stop=true;
+	foreach(n:g.nodes)
+		{
+			if((n.label!=n.label_1))
+				l1_stop=false;
+		}
+	foreach(n:g.nodes)
+                {
+                        if((n.label!=n.label_2))
+                                l2_stop=false;
+                }
+	if(!(l1_stop || l2_stop))
+	{
+
+ 	foreach(n:g.nodes)
+  		{ 
+		map<int,int> neighbours;
+		neighbours.clear();
+		//neighbours[n.label]=1;
+   		foreach(s:n.nbrs)
+   		{
+      			int temp=s.label;	
+			if(neighbours.hasKey(temp))
+				neighbours[temp]+=1;
+			else
+				neighbours[temp]=1;	
+		}      
+		int max_key=-99;
+		//max_key= neighbours.getMaxKey();
+	        int max_freq=-99;
+                int j=0;
+		int limit=neighbours.getMaxKey();
+		while(j<=limit)
+		{
+			if(neighbours.hasKey(j)&& max_freq<=neighbours[j])
+			{
+				max_freq=neighbours[j];
+			}
+		j++;
+		}
+		j=0;
+		int iter=0;
+		map <int,int> max_list;		
+		//max_list.clear();
+		while(j<=limit)
+		{
+			if (neighbours.hasKey(j) &&  neighbours[j]==max_freq)
+			{
+				//if(max_key<=j)
+				//max_key=j;
+				max_list[iter]=j;
+				iter++;
+			}
+			j++;
+		}
+		j=0;
+		max_key=-99;
+		while(j<=iter)
+		{
+			if(max_key<max_list[j]){
+				max_key=max_list[j];
+				}j++;	
+		}
+		//if (max_list.size()>0)
+		//	max_key=max_list.getMaxKey();
+		//else max_key=n.label;	
+		//if( max_key<0 || max_freq<0)
+		//	n.label_next=n.label;
+		//else 
+		{n.label_next=max_key;}
+		}
+		  	
+	foreach(n:g.nodes)
+		{
+		n.label_2=n.label_1;
+                n.label_1=n.label;
+                n.label=n.label_next;
+		}
+   
+ 	}
+	else 
+		mainStop=true;
+        }while(!mainStop && i<1);
+// the number of communities
+
+//map<int,int> comm;
+//foreach(n:g.nodes)
+//{
+//	int temp=n.label;
+//	comm[temp]+=1;
+//}
+//return comm.size();
+
+return i;
+
+}
+
