@@ -1,13 +1,4 @@
 __author__ = 'adi100989'
-'''
-Name:
-Type: Graph
-Number of nodes: 4039
-Number of edges: 88234
-Average degree:  43.6910
-the number of unique labels=  4039
-the number of communities after convergence== 239
-'''
 import community
 import networkx as nx
 import matplotlib.pyplot as plt
