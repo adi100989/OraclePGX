@@ -89,7 +89,9 @@ procedure label_propagation(g:graph,ID:N_P <int>(g) ;label_next: N_P <int>(g)):i
 			if(neighbours.hasKey(j) && neighbours[j]==max_value)
 				max_key=j;
 			j++;
-		}		
+		}
+		 if(max_key==-99)
+			max_key=n.label;
 		n.label_next=max_key;
 		}
 		  	
